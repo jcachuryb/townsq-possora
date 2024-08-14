@@ -7,7 +7,7 @@
   "scripts": {
     "compile": "tsc",
     "build": "npm run compile",
-    "start": "tsc && node dist/src/index.js"
+    "start": "tsc && node dist/index.js"
   },
   "keywords": [],
   "author": "",
