@@ -1,17 +1,16 @@
-import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import { Box, Button, Container, CssBaseline } from "@mui/material";
+import { PostsList } from "./components/PostsList";
 
 function App() {
   return (
     <Container maxWidth="sm">
       <CssBaseline />
 
-      <Box sx={{ bgcolor: "background.default" }}>
-        <Button variant="contained" color="primary">
-          Hello World
-        </Button>
+      <Box sx={{ bgcolor: "gray" }}>
+        <Box sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+          <PostsList />
+        </Box>
       </Box>
     </Container>
   );
