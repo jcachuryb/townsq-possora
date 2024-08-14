@@ -1,23 +1,27 @@
 {
-  "name": "backend",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "nodemon src/index.ts"
+    "compile": "tsc",
+    "build": "npm run compile",
+    "start": "tsc && node dist/src/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2",
-    "mongoose": "^8.5.2"
+    "@apollo/server": "^4.11.0",
+    "dotenv": "^16.4.5",
+    "graphql": "^16.9.0",
+    "mongoose": "^8.5.3"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
     "@types/mongoose": "^5.11.97",
+    "@types/node": "^22.3.0",
     "nodemon": "^3.1.4",
-    "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   }
 }
