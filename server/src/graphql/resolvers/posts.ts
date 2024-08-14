@@ -1,8 +1,14 @@
 import PostModel from "../../models/post.js";
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
+
 export const PostResolver = {
   Query: {
     getPosts: async (_, { page, limit }) => {
+      page = page ?? DEFAULT_PAGE;
+      limit = limit ?? DEFAULT_LIMIT;
+
       const query = await PostModel.find();
       return await PostModel.find()
         .skip((page - 1) * limit)
@@ -44,7 +50,12 @@ export const PostResolver = {
       return true;
     },
     deletePost: async (_, { id }, context, info) => {
-      await PostModel.findByIdAndDelete(id);
+      const postToDelete = await PostModel.findById(id);
+      if (!postToDelete) {
+        throw new Error("Post not found");
+      }
+      await adjustPostsOrder(postToDelete.order, postToDelete.order + 1);
+      await postToDelete.deleteOne();
       return "Post deleted";
     },
   },

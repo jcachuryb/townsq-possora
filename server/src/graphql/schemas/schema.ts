@@ -18,7 +18,7 @@ export const typeDefs = `#graphql
   }
 
   type Query {
-    getPosts: [Post]
+    getPosts(page: Int, limit: Int): [Post]
   }
 
   type Mutation {
