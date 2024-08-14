@@ -1,24 +1,29 @@
 export const typeDefs = `#graphql
-  
-  type Query {
-    getPosts: [Post],
-  }
 
-  input PostInput {
-    title: String!
-    content: String!
-    imageUri: String!
-}
 
   type Post {
     id: ID!
     title: String!
     content: String!
-    imageUri: String!
+    imageUri: String
+    order: Int!
+    createdAt: String!
   }
-  type Mutations {
+
+  input PostInput {
+    title: String!
+    content: String!
+    imageUri: String
+    order: Int
+  }
+
+  type Query {
+    getPosts: [Post]
+  }
+
+  type Mutation {
     createPost(postInput: PostInput): Post!,
-    changePostOrder(id: ID!, order: Int!): ID!,
+    changePostOrder(id: ID!, newOrder: Int!): Boolean!,
     deletePost(id: ID!): String!
   }
 `;

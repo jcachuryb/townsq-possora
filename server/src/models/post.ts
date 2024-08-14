@@ -5,6 +5,7 @@ interface Post {
   title: string;
   content: string;
   order: number;
+  createdAt?: Date;
 }
 
 const postSchema = new Schema<Post>({
@@ -19,6 +20,10 @@ const postSchema = new Schema<Post>({
   order: {
     type: Number,
     required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 

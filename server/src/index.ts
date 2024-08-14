@@ -12,17 +12,6 @@ dotenv.config({ path: "./.env" });
 
 const MONGODB_URI = process.env["MONGODB_URI"];
 
-const books = [
-  {
-    title: "The Awakening",
-    author: "Kate Chopin",
-  },
-  {
-    title: "City of Glass",
-    author: "Paul Auster",
-  },
-];
-
 const server = new ApolloServer({
   typeDefs: typeDefs,
   resolvers: PostResolver,
