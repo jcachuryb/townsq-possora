@@ -58,7 +58,13 @@ npm start
 ```
 
 1. The frontend will be available at `http://localhost:3000` and the GraphQL API at `http://localhost:4000/graphql`.
-2. There is a Mutation that clears and seeds the Collection. `reseedPosts`
+2. There is a Mutation that clears and seeds the Collection.
+
+```jsx
+mutation ReseedPosts {
+  reseedPosts
+}
+```
 
 ## Available Scripts
 
