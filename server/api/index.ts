@@ -15,56 +15,60 @@ import cors from "cors";
 import { typeDefs } from "./graphql/schemas/schema.js";
 import { PostResolver } from "./graphql/resolvers/posts.js";
 
-dotenv.config({ path: "./.env" });
+const main = async () => {
+  dotenv.config({ path: "./.env" });
 
-const app = express();
-const httpServer = http.createServer(app);
-const port = process.env["PORT"] ?? 4000;
+  const app = express();
+  const httpServer = http.createServer(app);
+  const port = process.env["PORT"] ?? 4000;
 
-const MONGODB_URI = process.env["MONGODB_URI"];
+  const MONGODB_URI = process.env["MONGODB_URI"];
 
-const schema = makeExecutableSchema({ typeDefs, resolvers: [PostResolver] });
+  const schema = makeExecutableSchema({ typeDefs, resolvers: [PostResolver] });
 
-// Creating the WebSocket server
-const wsServer = new WebSocketServer({
-  server: httpServer,
-  path: "/graphql",
-});
+  // Creating the WebSocket server
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: "/graphql",
+  });
 
-const serverCleanup = useServer({ schema }, wsServer);
+  const serverCleanup = useServer({ schema }, wsServer);
 
-const server = new ApolloServer({
-  schema,
+  const server = new ApolloServer({
+    schema,
 
-  plugins: [
-    ApolloServerPluginDrainHttpServer({ httpServer }),
-    // Proper shutdown for the WebSocket server.
-    {
-      async serverWillStart() {
-        return {
-          async drainServer() {
-            await serverCleanup.dispose();
-          },
-        };
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      // Proper shutdown for the WebSocket server.
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
       },
-    },
-  ],
-});
+    ],
+  });
 
-await mongoose.connect(MONGODB_URI);
-await server.start();
-app.use(
-  "/graphql",
-  cors<cors.CorsRequest>({
-    origin: process.env["CORS_WHITELIST"].split(","),
-  }),
-  express.json(),
-  expressMiddleware(server)
-);
+  await mongoose.connect(MONGODB_URI);
+  await server.start();
+  app.use(
+    "/graphql",
+    cors<cors.CorsRequest>({
+      origin: process.env["CORS_WHITELIST"].split(","),
+    }),
+    express.json(),
+    expressMiddleware(server)
+  );
 
-app.use("/", (req, res) => {
-  res.send("Hello Town Square!");
-});
+  app.use("/", (req, res) => {
+    res.send("Hello Town Square!");
+  });
 
-await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
-console.log(`🚀 Apollo Server ready at http://localhost:${port}/graphql`);
+  await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
+  console.log(`🚀 Apollo Server ready at http://localhost:${port}/graphql`);
+};
+
+export default main();
