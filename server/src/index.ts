@@ -1,8 +1,11 @@
 import express from "express";
 import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
+
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/lib/use/ws";
 
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -20,10 +23,32 @@ const port = process.env["PORT"] ?? 4000;
 
 const MONGODB_URI = process.env["MONGODB_URI"];
 
+const schema = makeExecutableSchema({ typeDefs, resolvers: [PostResolver] });
+
+// Creating the WebSocket server
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: "/graphql",
+});
+
+const serverCleanup = useServer({ schema }, wsServer);
+
 const server = new ApolloServer({
-  typeDefs,
-  resolvers: [PostResolver],
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  schema,
+
+  plugins: [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+    // Proper shutdown for the WebSocket server.
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await serverCleanup.dispose();
+          },
+        };
+      },
+    },
+  ],
 });
 
 await mongoose.connect(MONGODB_URI);

@@ -1,8 +1,13 @@
 import { mockedPosts } from "../../data/mocked_posts.js";
 import PostModel from "../../models/post.js";
+import { postsPubSub } from "../subscriptions/posts.subscriptions.js";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
+
+// SUBSCRIPTION EVENTS
+const EVENT_POST_UPDATED = "POST_UPDATED";
+const EVENT_POST_CREATED = "POST_CREATED";
 
 export const PostResolver = {
   Query: {
@@ -31,7 +36,9 @@ export const PostResolver = {
         await adjustPostsOrder(post.order, post.order);
       }
 
-      return await post.save();
+      const newPost = await post.save();
+      postsPubSub.publish(EVENT_POST_CREATED, { post: newPost });
+      return newPost;
     },
     updatePostOrder: async (
       _,
@@ -68,6 +75,7 @@ export const PostResolver = {
         newOrder = lastPost.order + 1;
       }
       postToUpdate.order = newOrder;
+      postsPubSub.publish(EVENT_POST_UPDATED, { post: postToUpdate });
       await postToUpdate.save();
       return true;
     },
@@ -84,6 +92,14 @@ export const PostResolver = {
         console.error(err);
         return false;
       }
+    },
+  },
+  Subscription: {
+    newPost: {
+      subscribe: () => postsPubSub.asyncIterator(EVENT_POST_CREATED),
+    },
+    updatedPost: {
+      subscribe: () => postsPubSub.asyncIterator(EVENT_POST_UPDATED),
     },
   },
 };

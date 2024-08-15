@@ -26,4 +26,9 @@ export const typeDefs = `#graphql
     updatePostOrder(id: ID!, refOrder: Float!, isUpperLimit: Boolean!): Boolean!,
     reseedPosts(arg:String): Boolean!
   }
+
+  type Subscription {
+    newPost: Post,
+    updatedPost: Post,
+  }
 `;
