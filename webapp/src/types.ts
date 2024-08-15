@@ -6,3 +6,5 @@ export type Post = {
   emoji?: string;
   order: number;
 };
+
+export type SnackBarMessage = { open: boolean; message: string };

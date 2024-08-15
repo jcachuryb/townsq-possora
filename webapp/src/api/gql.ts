@@ -1,8 +1,15 @@
-import { gql } from "@apollo/client";
+import { gql, TypedDocumentNode } from "@apollo/client";
 import { Post } from "../types";
 
 export interface IGetPosts {
   getPosts: Post[];
+}
+
+export interface IPostSubscription {
+  updatedPost: Post;
+}
+export interface IUpdatePostOrderMutationResult {
+  updatePostOrder: number;
 }
 
 export const GET_POSTS = gql`
@@ -25,5 +32,14 @@ export const MUTATION_UPDATE_POST_ORDER = gql`
     $isUpperLimit: Boolean!
   ) {
     updatePostOrder(id: $id, refOrder: $refOrder, isUpperLimit: $isUpperLimit)
+  }
+`;
+
+export const POST_REORDER_SUBSCRIPTION: TypedDocumentNode<any, any> = gql`
+  subscription {
+    updatedPost {
+      id
+      order
+    }
   }
 `;
