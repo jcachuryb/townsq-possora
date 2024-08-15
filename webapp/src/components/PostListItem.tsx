@@ -1,8 +1,14 @@
 import {
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  IconButton,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Typography,
 } from "@mui/material";
 import { Post } from "../types";
 import React from "react";
@@ -30,22 +36,38 @@ export const PostListItem: React.FC<Props> = (props) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isDragging ? 0.5 : 1,
+    margin: "10px",
+    display: "flex",
+    justifyContent: "space-between",
   };
 
   return (
-    <ListItem
-      key={post.id}
-      style={style}
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-    >
-      <ListItemButton role={undefined}>
-        <ListItemIcon>
+    <Card style={style} ref={setNodeRef} {...attributes} {...listeners}>
+      <Box
+        sx={{
+          display: "flex",
+          paddingX: 2,
+          alignItems: "center",
+        }}
+      >
+        <ListItemIcon
+          sx={{ ":hover": { cursor: isDragging ? "grabbing" : "grab" } }}
+        >
           {isDragging ? <NearMe /> : <DragIndicator />}
         </ListItemIcon>
-        <ListItemText primary={`${post.title}`} />
-      </ListItemButton>
-    </ListItem>
+
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <CardContent sx={{ flex: "1 0 auto" }}>
+            <Typography component="div" variant="h6">
+              {post.emoji} {post.title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" component="div">
+              {post.content}
+            </Typography>
+          </CardContent>
+        </Box>
+      </Box>
+    </Card>
   );
 };
