@@ -19,6 +19,27 @@ const main = async () => {
   dotenv.config({ path: "./.env" });
 
   const app = express();
+
+  const whitelist = process.env["CORS_WHITELIST"]
+    ? process.env["CORS_WHITELIST"].split(",")
+    : ["http://0.0.0.0:3000"];
+
+  const corsOptions = {
+    origin: function (origin, callback) {
+      if (
+        !origin ||
+        whitelist.indexOf(origin) !== -1 ||
+        whitelist.includes("*")
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
+
   const httpServer = http.createServer(app);
   const port = process.env["PORT"] ?? 4000;
 
@@ -66,26 +87,6 @@ const main = async () => {
   app.use("/", (req, res) => {
     res.send("Hello Town Square!");
   });
-
-  const whitelist = process.env["CORS_WHITELIST"]
-    ? process.env["CORS_WHITELIST"].split(",")
-    : ["http://0.0.0.0:3000"];
-
-  const corsOptions = {
-    origin: function (origin, callback) {
-      if (
-        !origin ||
-        whitelist.indexOf(origin) !== -1 ||
-        whitelist.includes("*")
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  };
-  app.use(cors(corsOptions));
 
   await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
   console.log(`🚀 Apollo Server ready at http://localhost:${port}/graphql`);
