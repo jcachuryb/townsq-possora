@@ -62,5 +62,9 @@ app.use(
   expressMiddleware(server)
 );
 
+app.use("/", (req, res) => {
+  res.send("Hello Town Square!");
+});
+
 await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
 console.log(`🚀 Apollo Server ready at http://localhost:${port}/graphql`);
