@@ -6,7 +6,7 @@ export const typeDefs = `#graphql
     title: String!
     content: String!
     imageUri: String
-    order: Int!
+    order: Float!
     createdAt: String!
   }
 
@@ -14,7 +14,7 @@ export const typeDefs = `#graphql
     title: String!
     content: String!
     imageUri: String
-    order: Int
+    order: Float
   }
 
   type Query {
@@ -24,6 +24,7 @@ export const typeDefs = `#graphql
   type Mutation {
     createPost(postInput: PostInput): Post!,
     changePostOrder(id: ID!, newOrder: Int!): Boolean!,
+    updatePostOrder(id: ID!, refOrder: Float!, isUpperLimit: Boolean!): Boolean!,
     deletePost(id: ID!): String!
   }
 `;

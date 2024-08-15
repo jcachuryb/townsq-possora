@@ -32,31 +32,43 @@ export const PostResolver = {
 
       return await post.save();
     },
-    changePostOrder: async (_, { id, newOrder }, context, info) => {
+    updatePostOrder: async (
+      _,
+      { id, refOrder, isUpperLimit },
+      context,
+      info
+    ) => {
       const postToUpdate = await PostModel.findById(id);
-      if (!postToUpdate) {
+      if (!postToUpdate || !refOrder) {
         throw new Error("Post not found");
       }
 
-      if (newOrder === postToUpdate.order) {
-        return true;
+      if (refOrder === postToUpdate.order) {
+        return false;
       }
 
-      const currentOrder = postToUpdate.order;
-      await adjustPostsOrder(currentOrder, newOrder);
-      postToUpdate.order = newOrder;
+      let newOrder = 1;
+      // Filter the posts based on the reference order
+      const filter = isUpperLimit
+        ? { order: { $lte: refOrder } }
+        : { order: { $gte: refOrder } };
+      const order = isUpperLimit ? -1 : 1;
 
+      const posts = await PostModel.find(filter).sort({ order }).limit(2);
+
+      if (posts.length == 2) {
+        const max = Math.max(posts[0].order, posts[1].order);
+        const min = Math.min(posts[0].order, posts[1].order);
+        newOrder = (max - min) / 2 + min;
+      } else if (posts.length == 1) {
+        newOrder = posts[0].order / 2;
+      } else {
+        const lastPost = await PostModel.findOne().sort({ order: -1 });
+        newOrder = lastPost.order + 1;
+      }
+      postToUpdate.order = newOrder;
       await postToUpdate.save();
       return true;
-    },
-    deletePost: async (_, { id }, context, info) => {
-      const postToDelete = await PostModel.findById(id);
-      if (!postToDelete) {
-        throw new Error("Post not found");
-      }
-      await adjustPostsOrder(postToDelete.order, postToDelete.order + 1);
-      await postToDelete.deleteOne();
-      return "Post deleted";
     },
   },
 };
