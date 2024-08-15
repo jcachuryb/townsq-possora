@@ -1,3 +1,4 @@
+import { mockedPosts } from "../../data/mocked_posts.js";
 import PostModel from "../../models/post.js";
 
 const DEFAULT_PAGE = 1;
@@ -69,6 +70,20 @@ export const PostResolver = {
       postToUpdate.order = newOrder;
       await postToUpdate.save();
       return true;
+    },
+
+    reseedPosts: async (_, args, context, info) => {
+      try {
+        await PostModel.deleteMany();
+
+        await PostModel.insertMany(
+          mockedPosts.map((post, index) => ({ order: index + 1, ...post }))
+        );
+        return true;
+      } catch (err) {
+        console.error(err);
+        return false;
+      }
     },
   },
 };

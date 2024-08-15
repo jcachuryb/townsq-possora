@@ -5,6 +5,7 @@ interface Post {
   title: string;
   content: string;
   order: number;
+  emoji?: string;
   createdAt?: Date;
 }
 
@@ -20,6 +21,9 @@ const postSchema = new Schema<Post>({
   order: {
     type: Number,
     required: true,
+  },
+  emoji: {
+    type: String,
   },
   createdAt: {
     type: Date,

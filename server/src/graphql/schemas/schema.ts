@@ -5,15 +5,15 @@ export const typeDefs = `#graphql
     id: ID!
     title: String!
     content: String!
-    imageUri: String
     order: Float!
+    emoji: String
     createdAt: String!
   }
 
   input PostInput {
     title: String!
     content: String!
-    imageUri: String
+    emoji: String
     order: Float
   }
 
@@ -23,8 +23,7 @@ export const typeDefs = `#graphql
 
   type Mutation {
     createPost(postInput: PostInput): Post!,
-    changePostOrder(id: ID!, newOrder: Int!): Boolean!,
     updatePostOrder(id: ID!, refOrder: Float!, isUpperLimit: Boolean!): Boolean!,
-    deletePost(id: ID!): String!
+    reseedPosts(arg:String): Boolean!
   }
 `;
