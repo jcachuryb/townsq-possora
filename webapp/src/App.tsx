@@ -3,8 +3,9 @@ import { Box, Container, CssBaseline } from "@mui/material";
 import { PostsList } from "./components/PostsList";
 import { AppBarComponent } from "./layouts/components/AppBar";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { ReactNode } from "react";
 
-const App = () => {
+const AppProviders: React.FC<{ children: ReactNode }> = ({ children }) => {
   const client = new ApolloClient({
     uri:
       process.env.REACT_APP_GRAPHQL_API_URL ?? "http://localhost:4000/graphql",
@@ -12,15 +13,22 @@ const App = () => {
   });
   return (
     <ApolloProvider client={client}>
-      <AppBarComponent title="Posts Sorter" />
-      <Container maxWidth="lg">
-        <CssBaseline />
+      <CssBaseline />
+      {children}
+    </ApolloProvider>
+  );
+};
 
-        <Box sx={{ marginTop: 2 }}>
+const App = () => {
+  return (
+    <AppProviders>
+      <AppBarComponent title="TSQ - Posts Sorter" />
+      <Container maxWidth="xl">
+        <Box sx={{ marginTop: 2, alignContent: "center" }}>
           <PostsList />
         </Box>
       </Container>
-    </ApolloProvider>
+    </AppProviders>
   );
 };
 
