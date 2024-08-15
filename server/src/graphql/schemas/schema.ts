@@ -23,7 +23,7 @@ export const typeDefs = `#graphql
 
   type Mutation {
     createPost(postInput: PostInput): Post!,
-    updatePostOrder(id: ID!, refOrder: Float!, isUpperLimit: Boolean!): Boolean!,
+    updatePostOrder(id: ID!, refOrder: Float!, isUpperLimit: Boolean!, emitEvent: Boolean): Float!,
     reseedPosts(arg:String): Boolean!
   }
 

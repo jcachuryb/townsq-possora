@@ -42,7 +42,7 @@ export const PostResolver = {
     },
     updatePostOrder: async (
       _,
-      { id, refOrder, isUpperLimit },
+      { id, refOrder, isUpperLimit, emitEvent },
       context,
       info
     ) => {
@@ -52,7 +52,7 @@ export const PostResolver = {
       }
 
       if (refOrder === postToUpdate.order) {
-        return false;
+        return refOrder;
       }
 
       let newOrder = 1;
@@ -75,9 +75,12 @@ export const PostResolver = {
         newOrder = lastPost.order + 1;
       }
       postToUpdate.order = newOrder;
-      postsPubSub.publish(EVENT_POST_UPDATED, { post: postToUpdate });
+
+      if (emitEvent)
+        postsPubSub.publish(EVENT_POST_UPDATED, { updatedPost: postToUpdate });
+
       await postToUpdate.save();
-      return true;
+      return newOrder;
     },
 
     reseedPosts: async (_, args, context, info) => {
